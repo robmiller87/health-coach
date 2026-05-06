@@ -1,72 +1,72 @@
-# Health Coach
+# 🫀 Health Coach
 
-A lightweight, open-source MVP for a **WhatsApp-based health coach** using **WHOOP data** and an **LLM coaching layer**.
+> A lightweight, open-source MVP for a **WhatsApp-based health coach** using **WHOOP data** and an **LLM coaching layer**.
 
 The first goal is not to build the perfect health app. The first goal is to prove that we can connect the infrastructure and create a useful coaching loop.
 
 ```text
-WhatsApp message → backend → WHOOP data → LLM coach → WhatsApp reply
+💬 WhatsApp message → 🧠 backend → 🫀 WHOOP data → 🤖 LLM coach → ✅ WhatsApp reply
 ```
 
-## Why this exists
+## 🌱 Why this exists
 
 Most people collect health data passively through devices like WHOOP, Garmin, Strava, Eight Sleep, or Apple Health. The data is useful, but it often stays trapped in dashboards.
 
 This project explores whether a chat-based coach can turn that data into simple, practical daily decisions:
 
-- Should I train hard today?
-- Should I recover instead?
-- What did my sleep/recovery suggest?
-- What habit should I adjust today?
-- How do food, sleep, strain, and recovery connect over time?
+- 🏋️ Should I train hard today?
+- 🧘 Should I recover instead?
+- 😴 What did my sleep/recovery suggest?
+- 🔁 What habit should I adjust today?
+- 📈 How do food, sleep, strain, and recovery connect over time?
 
-## MVP definition
+## 🎯 MVP definition
 
 A user should be able to message a coach on WhatsApp and get a useful response based on:
 
-1. Their latest WHOOP data
-2. Their personal goal
-3. Their message or context
-4. A lightweight LLM reasoning layer
+1. 🫀 Their latest WHOOP data
+2. 🎯 Their personal goal
+3. 💬 Their message or context
+4. 🤖 A lightweight LLM reasoning layer
 
 Example:
 
 > “Your recovery is low, sleep was short, and yesterday’s strain was high. Don’t do intervals today. Do 30–45 minutes Zone 2 or mobility, hydrate, get protein, and prioritize an early night.”
 
-## What we are testing first
+## 🧪 What we are testing first
 
-### Technical proof
+### 🔧 Technical proof
 
 - Can we connect to the WHOOP API?
 - Can we receive and send WhatsApp messages?
 - Can we combine health data + user input in a model prompt?
 - Can we return a useful coaching reply?
 
-### Product proof
+### 💡 Product proof
 
 - Does the advice feel specific enough to matter?
 - Would we use it ourselves daily?
 - Which first use case is strongest: performance, sleep, fat loss, or general health?
 - Is this worth expanding beyond a prototype?
 
-## Current status
+## 🚦 Current status
 
 Implemented locally:
 
-- Basic Node.js backend
-- Mock WHOOP data
-- Simple coach function
-- `/health` endpoint
-- `/coach` endpoint
-- Local test script
+- ✅ Basic Node.js backend
+- ✅ Mock WHOOP data
+- ✅ Simple coach function
+- ✅ `/health` endpoint
+- ✅ `/coach` endpoint
+- ✅ Local test script
 
 Next integrations:
 
-- WHOOP OAuth + real API data
-- WhatsApp Cloud API or Twilio WhatsApp webhook
-- Groq / open-source model call
+- 🔜 WHOOP OAuth + real API data
+- 🔜 WhatsApp Cloud API or Twilio WhatsApp webhook
+- 🔜 Groq / open-source model call
 
-## Quick start
+## ⚡ Quick start
 
 ```bash
 npm install
@@ -82,7 +82,7 @@ curl -X POST http://localhost:3000/coach \
   -d '{"message":"Should I train hard today?"}'
 ```
 
-## Environment variables
+## 🔐 Environment variables
 
 Copy `.env.example` to `.env` when adding real integrations:
 
@@ -101,30 +101,30 @@ Planned variables:
 - `GROQ_API_KEY`
 - `GROQ_MODEL`
 
-## Team responsibilities
+## 👥 Team responsibilities
 
-### Enzo — WHOOP / API
+### 🫀 Enzo — WHOOP / API
 
 - Review WHOOP API documentation
 - Confirm OAuth scopes and available endpoints
 - Test recovery, sleep, and strain data retrieval
 - Share a sample WHOOP JSON response
 
-### Arthur — WhatsApp / backend
+### 💬 Arthur — WhatsApp / backend
 
 - Decide WhatsApp path: Meta Cloud API, Twilio, or sandbox
 - Set up webhook receiver
 - Prove receiving one message and sending one reply
 - Help wire the backend into the WhatsApp flow
 
-### Robert — product / model
+### 🧭 Robert — product / model
 
 - Own MVP direction and scope
 - Define the first useful coach behaviours
 - Test Groq / open-source model path
 - Draft the initial system prompt and response format
 
-## First milestone
+## 🏁 First milestone
 
 The first milestone is an end-to-end demo:
 
@@ -138,7 +138,7 @@ User sends WhatsApp message
 
 If we can do this, we have the foundation.
 
-## Non-goals for v0
+## 🚫 Non-goals for v0
 
 To keep the first version small, we are not building:
 
@@ -149,6 +149,6 @@ To keep the first version small, we are not building:
 - full long-term coaching plans
 - multi-device integrations beyond WHOOP
 
-## License
+## 📄 License
 
 MIT.
