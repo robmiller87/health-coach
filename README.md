@@ -105,6 +105,70 @@ Planned variables:
 - `GROQ_API_KEY`
 - `GROQ_MODEL`
 
+## 🟣 Connecting your Oura Ring
+
+The Oura integration uses a **personal access token** — no OAuth flow, no app review. Takes about two minutes.
+
+### 1. Get a token
+
+1. Make sure your ring is set up and syncing in the Oura mobile app
+2. Go to [cloud.ouraring.com/personal-access-tokens](https://cloud.ouraring.com/personal-access-tokens) and log in with your Oura account
+3. Click **Create New Personal Access Token** and give it a name (e.g. `health-coach`)
+4. Copy the token immediately — it is only shown once
+
+### 2. Configure the app
+
+```
+cp .env.example .env
+```
+
+Then edit `.env`:
+
+```
+PROVIDER=oura
+OURA_PERSONAL_ACCESS_TOKEN=paste_your_token_here
+```
+
+### 3. Run it
+
+```
+npm run dev
+```
+
+```
+curl -X POST http://localhost:3000/coach \
+  -H "content-type: application/json" \
+  -d '{"message":"Should I train hard today?"}'
+```
+
+The reply now uses your real data: today's readiness score, last night's sleep (duration, HRV, lowest heart rate), and yesterday's activity load.
+
+### Notes
+
+- 📱 Oura syncs when you open the phone app — open it first if morning numbers look stale
+- 🕐 Sleep/readiness scores appear once the night is processed; very early calls may return partial data (the coach handles missing fields gracefully)
+- 🔁 Switch back to fake data anytime with `PROVIDER=mock`
+- 🧪 In mock mode you can test any scenario, e.g. `{"summary":{"readiness":25}}` in the `/coach` body
+
+### How providers work
+
+All providers return the same normalized shape, so the coach is device-agnostic:
+
+```json
+{
+  "source": "oura",
+  "date": "2026-06-11",
+  "readiness": 72,
+  "sleep_hours": 7.4,
+  "sleep_score": 81,
+  "hrv": 52,
+  "rhr": 55,
+  "activity_yesterday": { "score": 85, "active_calories": 540, "steps": 9800 }
+}
+```
+
+Adding WHOOP later = one new file in `src/providers/` returning this shape, plus one line in `src/providers/index.js`.
+
 ## 👥 Team responsibilities
 
 ### 🫀 Enzo — WHOOP / API
