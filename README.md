@@ -57,16 +57,18 @@ Implemented locally:
 - ✅ Provider layer with a normalized daily summary (`src/providers/`)
 - ✅ Mock provider for development
 - ✅ **Oura Ring provider** (API v2, personal access token)
-- ✅ Simple coach function
-- ✅ `/health` endpoint
-- ✅ `/coach` endpoint
+- ✅ Verdict engine: deterministic rules produce `{ verdict, intensity_cap, flags }`
+- ✅ LLM phrasing layer (Groq) with deterministic fallback — rules decide, the model only talks
+- ✅ WhatsApp webhook: GET verification + signed POST receiver (`X-Hub-Signature-256`)
+- ✅ Per-user store (`data/users.json`) with first-message disclaimer
+- ✅ `/health`, `/coach`, `/webhook` endpoints
 - ✅ Unit tests (`node --test`)
 
 Next integrations:
 
-- 🔜 WHOOP OAuth + real API data
-- 🔜 WhatsApp Cloud API or Twilio WhatsApp webhook
-- 🔜 Groq / open-source model call
+- 🔜 WHOOP OAuth + real API data (`src/providers/whoop.js`)
+- 🔜 Point a Meta app at `/webhook` (verify token + app secret in `.env`)
+- 🔜 Proactive morning brief via WHOOP/Oura webhooks or a cron
 
 ## ⚡ Quick start
 
