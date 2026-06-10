@@ -1,14 +1,14 @@
 {
   "name": "health-coach-mvp",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "WhatsApp health coach MVP using wearable data (Oura/WHOOP) and an LLM coaching layer",
+  "main": "src/server.js",
   "scripts": {
-    "test": "node src/test-coach.js",
+    "test": "node --test src/test-coach.js",
     "dev": "node src/server.js"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "type": "module"
 }

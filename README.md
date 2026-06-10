@@ -54,11 +54,13 @@ Example:
 Implemented locally:
 
 - ✅ Basic Node.js backend
-- ✅ Mock WHOOP data
+- ✅ Provider layer with a normalized daily summary (`src/providers/`)
+- ✅ Mock provider for development
+- ✅ **Oura Ring provider** (API v2, personal access token)
 - ✅ Simple coach function
 - ✅ `/health` endpoint
 - ✅ `/coach` endpoint
-- ✅ Local test script
+- ✅ Unit tests (`node --test`)
 
 Next integrations:
 
