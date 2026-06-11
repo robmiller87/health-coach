@@ -150,6 +150,24 @@ The reply now uses your real data: today's readiness score, last night's sleep (
 - 🔁 Switch back to fake data anytime with `PROVIDER=mock`
 - 🧪 In mock mode you can test any scenario, e.g. `{"summary":{"readiness":25}}` in the `/coach` body
 
+### Option B: OAuth (let others connect their rings)
+
+For multi-user use, create an OAuth app at [cloud.ouraring.com/oauth/applications](https://cloud.ouraring.com/oauth/applications) with redirect URI `https://your-domain/oauth/oura/callback`, then set in `.env`:
+
+```
+OURA_CLIENT_ID=...
+OURA_CLIENT_SECRET=...
+OURA_REDIRECT_URI=https://your-domain/oauth/oura/callback
+```
+
+Flow:
+
+1. Send a user to `/oauth/oura?phone=<their_whatsapp_number>`
+2. They approve on Oura's page; the callback stores their tokens in the user store
+3. From then on, the coach automatically uses **their** ring data (with auto token refresh)
+
+Per-user OAuth tokens take priority over the env personal access token.
+
 ### How providers work
 
 All providers return the same normalized shape, so the coach is device-agnostic:

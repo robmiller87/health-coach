@@ -1,19 +1,34 @@
-// Provider router — one place that decides where health data comes from.
-// Set PROVIDER=oura (with OURA_PERSONAL_ACCESS_TOKEN) to use real data,
-// or leave it unset / PROVIDER=mock for development.
+// Provider router — decides where health data comes from, per user.
 //
-// A future whoop.js just needs to export a function returning the same
-// normalized shape, then gets one line here.
+// Priority:
+//  1. The user has connected their own Oura via OAuth → use their tokens
+//  2. PROVIDER=oura with OURA_PERSONAL_ACCESS_TOKEN → owner's ring
+//  3. PROVIDER=mock (default) → fake data for development
 
 import { getMockSummary } from './mock.js';
 import { getOuraSummary } from './oura.js';
+import { updateUser } from '../users.js';
 
-export async function getDailySummary() {
+export async function getDailySummary({ phone, user } = {}) {
+  if (user?.oura?.access_token) {
+    return getOuraSummary({
+      type: 'oauth',
+      access_token: user.oura.access_token,
+      refresh_token: user.oura.refresh_token,
+      onTokens: tokens =>
+        updateUser(phone, {
+          oura: {
+            access_token: tokens.access_token,
+            refresh_token: tokens.refresh_token ?? user.oura.refresh_token
+          }
+        })
+    });
+  }
+
   const provider = (process.env.PROVIDER || 'mock').toLowerCase();
-
   switch (provider) {
     case 'oura':
-      return getOuraSummary();
+      return getOuraSummary(); // falls back to PAT from env
     case 'mock':
       return getMockSummary();
     default:

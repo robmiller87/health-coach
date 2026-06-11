@@ -1,6 +1,7 @@
 import http from 'node:http';
 import { getDailySummary } from './providers/index.js';
 import { getMockSummary } from './providers/mock.js';
+import { getAuthUrl, exchangeCode } from './providers/oura.js';
 import { generateCoachReply } from './coach.js';
 import { getUser, updateUser } from './users.js';
 import { verifySignature, extractTextMessages, sendText } from './whatsapp.js';
@@ -32,6 +33,38 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === 'GET' && url.pathname === '/health') {
     return json(res, 200, { ok: true, provider: process.env.PROVIDER || 'mock' });
+  }
+
+  // --- Oura OAuth: send a user here to connect their ring ---
+  // e.g. /oauth/oura?phone=33600000001  (phone = WhatsApp number / user key)
+  if (req.method === 'GET' && url.pathname === '/oauth/oura') {
+    if (!process.env.OURA_CLIENT_ID || !process.env.OURA_REDIRECT_URI) {
+      return json(res, 500, { error: 'oura_oauth_not_configured' });
+    }
+    const phone = url.searchParams.get('phone') || 'local-test';
+    res.writeHead(302, { location: getAuthUrl({ state: phone }) });
+    return res.end();
+  }
+
+  // --- Oura OAuth callback: exchange code, store tokens on the user ---
+  if (req.method === 'GET' && url.pathname === '/oauth/oura/callback') {
+    const code = url.searchParams.get('code');
+    const phone = url.searchParams.get('state') || 'local-test';
+    if (!code) return json(res, 400, { error: 'missing_code' });
+    try {
+      const tokens = await exchangeCode(code);
+      updateUser(phone, {
+        oura: {
+          access_token: tokens.access_token,
+          refresh_token: tokens.refresh_token
+        }
+      });
+      res.writeHead(200, { 'content-type': 'text/plain' });
+      return res.end('Oura connected. You can close this tab and message the coach.');
+    } catch (err) {
+      console.error(err);
+      return json(res, 502, { error: 'oauth_exchange_failed', detail: err.message });
+    }
   }
 
   // --- WhatsApp webhook verification (Meta calls this once on setup) ---
@@ -71,7 +104,7 @@ const server = http.createServer(async (req, res) => {
     for (const { from, text } of extractTextMessages(payload)) {
       try {
         const profile = getUser(from);
-        const summary = await getDailySummary();
+        const summary = await getDailySummary({ phone: from, user: profile });
         const { reply } = await generateCoachReply({
           userProfile: profile,
           summary,
@@ -102,12 +135,12 @@ const server = http.createServer(async (req, res) => {
     try {
       // In mock mode, allow scenario overrides: {"summary": {"readiness": 90}}
       const provider = (process.env.PROVIDER || 'mock').toLowerCase();
+      const phone = body.phone || 'local-test';
+      const profile = getUser(phone);
       const summary =
         provider === 'mock' && body.summary
           ? getMockSummary(body.summary)
-          : await getDailySummary();
-
-      const profile = getUser(body.phone || 'local-test');
+          : await getDailySummary({ phone, user: profile });
       const { reply, verdict } = await generateCoachReply({
         userProfile: profile,
         summary,
